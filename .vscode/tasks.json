@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "k6: master-category-merchants",
+			"type": "shell",
+			"command": "k6",
+			"args": [
+				"run",
+				"k6/master_category_merchant_test.js"
+			],
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}
