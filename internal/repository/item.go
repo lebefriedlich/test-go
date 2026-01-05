@@ -3,56 +3,34 @@ package repository
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"gorm.io/gorm"
 )
 
 // MasterCategoryMerchant represents a row from master_category_merchant.
 type MasterCategoryMerchant struct {
-	ID          string     `json:"id"`
-	Name        string     `json:"name"`
-	Description *string    `json:"description,omitempty"`
+	ID          string  `gorm:"column:id;type:uuid;primaryKey" json:"id"`
+	Name        string  `gorm:"column:name" json:"name"`
+	Description *string `gorm:"column:description" json:"description,omitempty"`
+}
+
+// TableName sets the table name for GORM.
+func (MasterCategoryMerchant) TableName() string {
+	return "master_category_merchant"
 }
 
 // MasterCategoryMerchantRepository handles queries for master_category_merchant data.
 type MasterCategoryMerchantRepository struct {
-	pool *pgxpool.Pool
+	db *gorm.DB
 }
 
-func NewMasterCategoryMerchantRepository(pool *pgxpool.Pool) *MasterCategoryMerchantRepository {
-	return &MasterCategoryMerchantRepository{pool: pool}
+func NewMasterCategoryMerchantRepository(db *gorm.DB) *MasterCategoryMerchantRepository {
+	return &MasterCategoryMerchantRepository{db: db}
 }
 
 func (r *MasterCategoryMerchantRepository) List(ctx context.Context) ([]MasterCategoryMerchant, error) {
-	const query = `
-		SELECT
-			id::text AS id,
-			name,
-			description
-		FROM master_category_merchant
-		ORDER BY name
-	`
-
-	rows, err := r.pool.Query(ctx, query)
-	if err != nil {
+	var records []MasterCategoryMerchant
+	if err := r.db.WithContext(ctx).Order("name").Find(&records).Error; err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	records, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (MasterCategoryMerchant, error) {
-		var rec MasterCategoryMerchant
-		if err := row.Scan(
-			&rec.ID,
-			&rec.Name,
-			&rec.Description,
-		); err != nil {
-			return MasterCategoryMerchant{}, err
-		}
-		return rec, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	return records, nil
 }

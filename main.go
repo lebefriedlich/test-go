@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"os/signal"
@@ -21,14 +20,12 @@ func main() {
 		log.Fatalf("load config: %v", err)
 	}
 
-	ctx := context.Background()
-	pool, err := db.NewPool(ctx, cfg)
+	gormDB, err := db.NewDB(cfg)
 	if err != nil {
 		log.Fatalf("connect db: %v", err)
 	}
-	defer pool.Close()
 
-	repo := repository.NewMasterCategoryMerchantRepository(pool)
+	repo := repository.NewMasterCategoryMerchantRepository(gormDB)
 
 	app := fiber.New()
 	handler.RegisterMasterCategoryMerchantRoutes(app, repo)

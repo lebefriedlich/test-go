@@ -17,7 +17,7 @@ export const options = {
 };
 
 export default function () {
-  let res = http.get('http://127.0.0.1:3001/merchants/categories');
+  let res = http.get('http://127.0.0.1:8080/master-category-merchants');
   
   check(res, {
     'status 200': (r) => r.status === 200,
