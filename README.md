@@ -1,6 +1,6 @@
 # Go Fiber + PostgreSQL API
 
-Fiber API yang membaca data `master_category_merchant`.
+Fiber API that reads data `master_category_merchant`.
 
 ## Prerequisites
 - Go 1.22+
